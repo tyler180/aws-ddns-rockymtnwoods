@@ -43,3 +43,18 @@ terraform.rc
 *.cer
 *.key
 *.pem
+
+# build outputs
+function.zip
+authorizer.zip
+rotator.zip
+**/dist/
+
+# terraform local state
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+
+# editor cruft
+.DS_Store
