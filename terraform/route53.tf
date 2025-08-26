@@ -1,5 +1,5 @@
 data "aws_route53_zone" "rockymtnwoods" {
-  name         = "rockymtnwoods.com."
+  name = "rockymtnwoods.com."
 }
 
 data "aws_acm_certificate" "rockymtnwoods_amazon_issued" {
@@ -12,8 +12,8 @@ module "acm" {
   source  = "terraform-aws-modules/acm/aws"
   version = "~> 4.0"
 
-  domain_name  = "rockymtnwoods.com"
-  zone_id      = data.aws_route53_zone.rockymtnwoods.zone_id
+  domain_name = "rockymtnwoods.com"
+  zone_id     = data.aws_route53_zone.rockymtnwoods.zone_id
 
   validation_method = "DNS"
 
@@ -24,7 +24,7 @@ module "acm" {
   wait_for_validation = true
 
   tags = {
-    Name = "rockymtnwoods.com"
+    Name       = "rockymtnwoods.com"
     Managed_by = "Terraform"
   }
 }

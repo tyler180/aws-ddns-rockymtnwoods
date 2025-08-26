@@ -32,6 +32,16 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+build_go_bootstrap() { # dir outzip arch
+  local dir="$1" outzip="$2" arch="$3"
+  pushd "$dir" >/dev/null
+  GOOS=linux GOARCH="$arch" CGO_ENABLED=0 \
+    go build -trimpath -ldflags="-s -w" -o bootstrap .
+  chmod +x bootstrap
+  zip -9j "$outzip" bootstrap
+  popd >/dev/null
+}
+
 need() { command -v "$1" >/dev/null 2>&1 || { echo "Missing: $1" >&2; exit 1; }; }
 need go; need zip
 
@@ -109,7 +119,7 @@ popd >/dev/null
 build_main_zip "." "function.zip"
 
 # Authorizer
-build_zip "authorizer" "authorizer.zip"
+build_go_bootstrap "authorizer" "authorizer.zip" "amd64"
 
 # Rotator (optional)
 if [[ "$ROTATOR" == "on" ]]; then

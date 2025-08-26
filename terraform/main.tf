@@ -119,21 +119,53 @@ resource "aws_iam_role_policy_attachment" "ddns_attach" {
 resource "aws_iam_role" "rot_role" {
   count              = var.enable_rotator ? 1 : 0
   name               = "ddns-rotator-role"
-  assume_role_policy = data.aws_iam_policy_document.assume_lambda.json
+  assume_role_policy = data.aws_iam_policy_document.rot_assume.json
 }
-resource "aws_iam_policy" "rot_policy" {
-  count = var.enable_rotator ? 1 : 0
-  name  = "ddns-rotator-policy"
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      { Effect = "Allow", Action = ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"], Resource = "*" },
-      { Effect = "Allow", Action = ["secretsmanager:PutSecretValue", "secretsmanager:GetSecretValue"], Resource = aws_secretsmanager_secret.ddns_token.arn }
+# Permissions for logging + Secrets Manager write
+data "aws_iam_policy_document" "rot_policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
     ]
-  })
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:PutSecretValue",
+    ]
+    resources = [
+      aws_secretsmanager_secret.ddns_token.arn,
+      "${aws_secretsmanager_secret.ddns_token.arn}-*"
+    ]
+  }
 }
+
+resource "aws_iam_policy" "rot_policy" {
+  count  = var.enable_rotator ? 1 : 0
+  name   = "ddns-rotator-policy"
+  policy = data.aws_iam_policy_document.rot_policy.json
+}
+
 resource "aws_iam_role_policy_attachment" "rot_attach" {
   count      = var.enable_rotator ? 1 : 0
   role       = aws_iam_role.rot_role[0].name
   policy_arn = aws_iam_policy.rot_policy[0].arn
+}
+
+data "aws_iam_policy_document" "rot_assume" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
 }
