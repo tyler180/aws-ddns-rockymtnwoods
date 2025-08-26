@@ -48,7 +48,9 @@ terraform.rc
 function.zip
 authorizer.zip
 rotator.zip
+*.zip
 **/dist/
+bootstrap
 
 # terraform local state
 .terraform/
