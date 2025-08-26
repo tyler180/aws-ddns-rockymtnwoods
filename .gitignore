@@ -52,6 +52,9 @@ rotator.zip
 **/dist/
 bootstrap
 .*.zip
+terraform/.authorizer-upload.zip
+terraform/.function-upload.zip
+terraform/.rotator-upload.zip
 
 # terraform local state
 .terraform/
