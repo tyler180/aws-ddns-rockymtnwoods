@@ -51,6 +51,7 @@ rotator.zip
 *.zip
 **/dist/
 bootstrap
+.*.zip
 
 # terraform local state
 .terraform/
