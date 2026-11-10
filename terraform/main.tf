@@ -4,7 +4,7 @@ terraform {
   backend "s3" {
     region         = "us-west-2"
     bucket         = "rockymtnwoods-tf-backends"
-    key            = "route53/terraform.tfstate"
+    key            = "route53/rockymtnwoods.tfstate"
     encrypt        = "true"
     dynamodb_table = "terraform-lock-table"
   }
